@@ -127,6 +127,16 @@ app.use("/api/admin/notes", protect, protectAdmin, incidentNoteRoutes);
 // ---------------- OTHER ROUTES ------------------
 app.use("/api/sos", sosRoutes); // Public SOS
 
+// Root route (optional but nice for Render test)
+app.get("/", (req, res) => {
+  res.send("🚀 Disaster Management Backend is Running");
+});
+
+// Health check
+app.get("/api/health", (req, res) => {
+  res.json({ status: "OK", message: "Backend running 🚀" });
+});
+
 // Run server
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Backend running on port ${PORT}`));
