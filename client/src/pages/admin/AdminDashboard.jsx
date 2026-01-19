@@ -316,295 +316,125 @@
 //   );
 // }
 
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import api from "../../api";
-import { normalizeSOS, formatDate } from "../../utils/normalizeAdminData";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-export default function AdminDashboard() {
-  // ---------------- STATE ----------------
-  const [activeTab, setActiveTab] = useState("feed");
-  const [personnelTab, setPersonnelTab] = useState("volunteers");
+// Layouts
+import VolunteerLayout from "./Layouts/VolunteerLayout";
+import AdminLayout from "./Layouts/AdminLayout";
+import CitizenLayout from "./Layouts/CitizenLayout";
 
-  const [alerts, setAlerts] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [sosList, setSosList] = useState([]);
+// Volunteer pages
+import Dashboard from "./pages/volunteer/Dashboard";
+import MissionsList from "./pages/volunteer/MissionsList";
+import ReportIncident from "./pages/volunteer/ReportIncident";
+import Profile from "./pages/volunteer/Profile";
+import VolunteerLogin from "./pages/volunteer/VolunteerLogin";
+import VolunteerRegister from "./pages/volunteer/VolunteerRegister";
+import Training from "./pages/volunteer/Training";
+import Broadcasts from "./pages/volunteer/Broadcasts";
+import VolunteerIncidentDetails from "./pages/volunteer/IncidentDetails";
 
-  const [loading, setLoading] = useState(true);
+// Admin pages
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import TeamAssignment from "./pages/admin/TeamAssignment";
+import BroadcastCenter from "./pages/admin/BroadcastCenter";
+import AdminIncidentDetails from "./pages/admin/IncidentDetails";
+import AdminLogin from "./pages/admin/AdminLogin";
+import IncidentLog from "./pages/admin/IncidentLog";
+import AdminSOS from "./pages/admin/AdminSOS";
+import AdminIncidents from "./pages/admin/AdminIncidents";
 
-  // ---------------- EFFECT ----------------
-  useEffect(() => {
-    loadAllData();
-  }, []);
+// Citizen pages
+import CitizenLogin from "./pages/citizen/CitizenLogin";
+import CitizenRegister from "./pages/citizen/CitizenRegister";
+import CitizenReport from "./pages/citizen/CitizenReport";
+import CitizenIncidents from "./pages/citizen/CitizenIncidents";
+import CitizenAlerts from "./pages/citizen/CitizenAlert";
+import CitizenRelief from "./pages/citizen/CitizenRelief";
 
-  // ---------------- LOAD ALL DATA ----------------
-  const loadAllData = async () => {
-    try {
-      const [alertRes, userRes, sosRes] = await Promise.all([
-        api.get("/admin/alerts"),
-        api.get("/admin/users"),
-        api.get("/sos/all"),
-      ]);
+// Components
+import SOSbutton from "./components/SOSbutton";
+import Donate from "./components/Donate";
 
-      setAlerts(alertRes.data || []);
-      setUsers(userRes.data || []);
+// General
+import Home from "./pages/Home";
+import NotFound from "./pages/NotFound";
 
-      const normalizedSOS = (sosRes.data || []).map(normalizeSOS);
-      setSosList(normalizedSOS);
-    } catch (err) {
-      console.error("Admin Dashboard Load Error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+// 🔐 Admin Role Checker
+const isAdmin = () => {
+  const token = localStorage.getItem("token");
+  if (!token) return false;
 
-  // ---------------- ACTIONS ----------------
-  const toggleVolunteer = async (id) => {
-    if (!window.confirm("Change access status?")) return;
-    try {
-      await api.put(`/admin/volunteers/${id}/toggle-status`);
-      loadAllData();
-    } catch {
-      alert("Action failed");
-    }
-  };
-
-  const toggleCitizen = async (id) => {
-    if (!window.confirm("Change access status?")) return;
-    try {
-      await api.put(`/admin/citizens/${id}/toggle-status`);
-      loadAllData();
-    } catch {
-      alert("Action failed");
-    }
-  };
-
-  const deleteUser = async (id) => {
-    if (!window.confirm("Permanently delete this user?")) return;
-    try {
-      await api.delete(`/admin/users/${id}`);
-      loadAllData();
-    } catch {
-      alert("Delete failed");
-    }
-  };
-
-  // ---------------- FILTERS ----------------
-  const volunteers = users.filter((u) => u.roleType === "VOLUNTEER");
-  const citizens = users.filter((u) => u.roleType === "CITIZEN");
-
-  // ---------------- LOADING ----------------
-  if (loading) {
-    return (
-      <div className="text-white p-10 animate-pulse text-lg font-mono">
-        INITIALIZING COMMAND INTERFACE...
-      </div>
-    );
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.role === "admin";
+  } catch {
+    return false;
   }
+};
 
-  // ---------------- UI ----------------
+export default function App() {
   return (
-    <div className="animate-fade-in-up">
-      {/* HEADER */}
-      <div className="mb-8 border-b border-slate-800 pb-6">
-        <h1 className="text-4xl font-black text-white tracking-tight mb-2">
-          Command Overwatch
-        </h1>
-        <p className="text-slate-400 font-medium">
-          System Administration Console
-        </p>
+    <BrowserRouter>
+      {/* GLOBAL THEME WRAPPER */}
+      <div className="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased selection:bg-red-500 selection:text-white">
+        <Routes>
+          {/* HOME */}
+          <Route path="/" element={<Home />} />
+          <Route path="/donate" element={<Donate />} />
+
+          {/* AUTH ROUTES */}
+          <Route path="/citizen/login" element={<CitizenLogin />} />
+          <Route path="/citizen/register" element={<CitizenRegister />} />
+          <Route path="/volunteer/login" element={<VolunteerLogin />} />
+          <Route path="/volunteer/register" element={<VolunteerRegister />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+
+          {/* CITIZEN AREA */}
+          <Route path="/citizen" element={<CitizenLayout />}>
+            <Route index element={<Navigate to="report" replace />} />
+            <Route path="report" element={<CitizenReport />} />
+            <Route path="relief" element={<CitizenRelief />} />
+            <Route path="incidents" element={<CitizenIncidents />} />
+            <Route path="alerts" element={<CitizenAlerts />} />
+          </Route>
+
+          {/* VOLUNTEER AREA */}
+          <Route path="/volunteer" element={<VolunteerLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="missions" element={<MissionsList />} />
+            <Route path="incidents/:id" element={<VolunteerIncidentDetails />} />
+            <Route path="report" element={<ReportIncident />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="training" element={<Training />} />
+            <Route path="broadcasts" element={<Broadcasts />} />
+          </Route>
+
+          {/* 🔐 ADMIN AREA (PROTECTED) */}
+          <Route
+            path="/admin"
+            element={
+              isAdmin() ? <AdminLayout /> : <Navigate to="/" replace />
+            }
+          >
+            {/* Default → SOS Panel */}
+            <Route index element={<Navigate to="sos" replace />} />
+
+            <Route path="sos" element={<AdminSOS />} />
+            <Route path="incidents" element={<AdminIncidents />} />
+            <Route path="incidents/:id" element={<AdminIncidentDetails />} />
+            <Route path="teams" element={<TeamAssignment />} />
+            <Route path="broadcast" element={<BroadcastCenter />} />
+            <Route path="log" element={<IncidentLog />} />
+          </Route>
+
+          {/* 404 */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </div>
 
-      {/* TABS */}
-      <div className="flex gap-4 mb-8">
-        <button
-          onClick={() => setActiveTab("feed")}
-          className={`px-6 py-2.5 rounded-lg font-bold text-sm transition-all ${
-            activeTab === "feed"
-              ? "bg-amber-500 text-black"
-              : "bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white"
-          }`}
-        >
-          LIVE FEED
-        </button>
-
-        <button
-          onClick={() => setActiveTab("users")}
-          className={`px-6 py-2.5 rounded-lg font-bold text-sm transition-all ${
-            activeTab === "users"
-              ? "bg-amber-500 text-black"
-              : "bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white"
-          }`}
-        >
-          USER DATABASE
-        </button>
-
-        <button
-          onClick={() => setActiveTab("sos")}
-          className={`px-6 py-2.5 rounded-lg font-bold text-sm transition-all ${
-            activeTab === "sos"
-              ? "bg-red-500 text-black"
-              : "bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white"
-          }`}
-        >
-          SOS ALERTS
-        </button>
-      </div>
-
-      {/* ---------------- TAB 1: LIVE FEED ---------------- */}
-      {activeTab === "feed" && (
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-8">
-          <h3 className="text-xl font-bold text-white mb-6">
-            Live Incident Feed
-          </h3>
-
-          {alerts.length === 0 && (
-            <p className="text-slate-500 italic">No active alerts</p>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {alerts.map((a) => (
-              <div
-                key={a._id}
-                className="bg-slate-900 border-l-4 border-red-500 p-6 rounded-r-xl"
-              >
-                <h3 className="text-lg font-bold text-white mb-2">
-                  {a.title}
-                </h3>
-                <p className="text-slate-400 text-sm mb-4">
-                  {a.message || a.description}
-                </p>
-
-                <div className="flex justify-between text-xs text-slate-500">
-                  <span>{a.source}</span>
-                  <span>
-                    {new Date(a.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-
-                <Link to={`/admin/incidents/${a._id}`}>
-                  <button className="w-full mt-4 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2 rounded">
-                    RESPOND →
-                  </button>
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ---------------- TAB 2: USERS ---------------- */}
-      {activeTab === "users" && (
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-8">
-          {/* Sub Tabs */}
-          <div className="flex border-b border-slate-800 mb-6">
-            <button
-              onClick={() => setPersonnelTab("volunteers")}
-              className={`pb-4 px-4 text-sm font-bold ${
-                personnelTab === "volunteers"
-                  ? "text-amber-500 border-b-2 border-amber-500"
-                  : "text-slate-500"
-              }`}
-            >
-              VOLUNTEERS ({volunteers.length})
-            </button>
-
-            <button
-              onClick={() => setPersonnelTab("citizens")}
-              className={`pb-4 px-4 text-sm font-bold ${
-                personnelTab === "citizens"
-                  ? "text-amber-500 border-b-2 border-amber-500"
-                  : "text-slate-500"
-              }`}
-            >
-              CITIZENS ({citizens.length})
-            </button>
-          </div>
-
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="text-xs text-slate-500 border-b border-slate-800">
-                <th className="p-3">Name</th>
-                <th className="p-3">Contact</th>
-                <th className="p-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800 text-sm">
-              {(personnelTab === "volunteers"
-                ? volunteers
-                : citizens
-              ).map((u) => (
-                <tr key={u._id}>
-                  <td className="p-3 text-white">{u.name}</td>
-                  <td className="p-3 text-slate-400">
-                    {u.email || u.phone}
-                  </td>
-                  <td className="p-3 flex gap-2">
-                    <button
-                      onClick={() =>
-                        personnelTab === "volunteers"
-                          ? toggleVolunteer(u._id)
-                          : toggleCitizen(u._id)
-                      }
-                      className="px-3 py-1 bg-amber-600 text-black rounded text-xs font-bold"
-                    >
-                      TOGGLE
-                    </button>
-
-                    <button
-                      onClick={() => deleteUser(u._id)}
-                      className="px-3 py-1 bg-red-600 text-white rounded text-xs font-bold"
-                    >
-                      DELETE
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* ---------------- TAB 3: SOS ---------------- */}
-      {activeTab === "sos" && (
-        <div className="bg-slate-900/60 border border-red-500/20 rounded-2xl p-8">
-          <h3 className="text-xl font-bold text-red-500 mb-6">
-            Emergency SOS Signals
-          </h3>
-
-          {sosList.length === 0 ? (
-            <p className="text-slate-500 italic">No SOS alerts</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {sosList.map((sos) => (
-                <div
-                  key={sos._id}
-                  className="bg-[#0c0c0c] p-6 rounded-xl border border-white/5"
-                >
-                  <div className="flex justify-between mb-3">
-                    <span className="text-xs font-bold text-red-400">
-                      SOS SIGNAL
-                    </span>
-                    <span className="text-xs text-slate-500">
-                      {formatDate(sos.timestamp)}
-                    </span>
-                  </div>
-
-                  <div className="text-sm font-mono text-white mb-4">
-                    Latitude: {sos.latitude ?? "N/A"}
-                    <br />
-                    Longitude: {sos.longitude ?? "N/A"}
-                  </div>
-
-                  <button className="w-full bg-red-600 hover:bg-red-500 text-white text-xs font-bold py-2 rounded">
-                    ACKNOWLEDGE
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+      {/* Floating SOS Button */}
+      <SOSbutton />
+    </BrowserRouter>
   );
 }
