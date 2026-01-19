@@ -326,6 +326,7 @@ import CitizenLayout from "./Layouts/CitizenLayout";
 // Volunteer pages
 import Dashboard from "./pages/volunteer/Dashboard";
 import MissionsList from "./pages/volunteer/MissionsList";
+import IncidentDetails from "./pages/volunteer/IncidentDetails";
 import ReportIncident from "./pages/volunteer/ReportIncident";
 import Profile from "./pages/volunteer/Profile";
 import VolunteerLogin from "./pages/volunteer/VolunteerLogin";
@@ -352,26 +353,12 @@ import CitizenIncidents from "./pages/citizen/CitizenIncidents";
 import CitizenAlerts from "./pages/citizen/CitizenAlert";
 import CitizenRelief from "./pages/citizen/CitizenRelief";
 
-// Components
 import SOSbutton from "./components/SOSbutton";
-import Donate from "./components/Donate";
 
 // General
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
-
-// 🔐 Admin Role Checker
-const isAdmin = () => {
-  const token = localStorage.getItem("token");
-  if (!token) return false;
-
-  try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    return payload.role === "admin";
-  } catch {
-    return false;
-  }
-};
+import Donate from "./components/Donate";
 
 export default function App() {
   return (
@@ -379,18 +366,20 @@ export default function App() {
       {/* GLOBAL THEME WRAPPER */}
       <div className="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased selection:bg-red-500 selection:text-white">
         <Routes>
-          {/* HOME */}
+          {/* HOME PAGE */}
           <Route path="/" element={<Home />} />
           <Route path="/donate" element={<Donate />} />
 
-          {/* AUTH ROUTES */}
+          {/* 🔹 Independent Auth Routes */}
           <Route path="/citizen/login" element={<CitizenLogin />} />
           <Route path="/citizen/register" element={<CitizenRegister />} />
+
           <Route path="/volunteer/login" element={<VolunteerLogin />} />
           <Route path="/volunteer/register" element={<VolunteerRegister />} />
+
           <Route path="/admin/login" element={<AdminLogin />} />
 
-          {/* CITIZEN AREA */}
+          {/* 🔹 Citizen Dashboard Area */}
           <Route path="/citizen" element={<CitizenLayout />}>
             <Route index element={<Navigate to="report" replace />} />
             <Route path="report" element={<CitizenReport />} />
@@ -399,7 +388,7 @@ export default function App() {
             <Route path="alerts" element={<CitizenAlerts />} />
           </Route>
 
-          {/* VOLUNTEER AREA */}
+          {/* 🔹 Volunteer Dashboard Area */}
           <Route path="/volunteer" element={<VolunteerLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="missions" element={<MissionsList />} />
@@ -410,31 +399,36 @@ export default function App() {
             <Route path="broadcasts" element={<Broadcasts />} />
           </Route>
 
-          {/* 🔐 ADMIN AREA (PROTECTED) */}
-          <Route
-            path="/admin"
-            element={
-              isAdmin() ? <AdminLayout /> : <Navigate to="/" replace />
-            }
-          >
-            {/* Default → SOS Panel */}
+          {/* 🔹 Admin Command Center */}
+          <Route path="/admin" element={<AdminLayout />}>
+            {/* Default: SOS Control Panel (Most Critical) */}
             <Route index element={<Navigate to="sos" replace />} />
 
             <Route path="sos" element={<AdminSOS />} />
+
+            {/* Live Incidents List (with tabs for Citizen/Volunteer) */}
             <Route path="incidents" element={<AdminIncidents />} />
+
+            {/* Incident Details */}
             <Route path="incidents/:id" element={<AdminIncidentDetails />} />
+
+            {/* Team Operations */}
             <Route path="teams" element={<TeamAssignment />} />
+
+            {/* Alert Broadcasts */}
             <Route path="broadcast" element={<BroadcastCenter />} />
+
+            {/* Optional: Full Incident Log (table view) */}
             <Route path="log" element={<IncidentLog />} />
           </Route>
 
-          {/* 404 */}
+          {/* 🔹 404 Catch-All */}
           <Route path="*" element={<NotFound />} />
-        </Routes>
-      </div>
+        </Routes >
+      </div >
 
-      {/* Floating SOS Button */}
-      <SOSbutton />
-    </BrowserRouter>
+      {/* Global Floating SOS Button */}
+      < SOSbutton />
+    </BrowserRouter >
   );
 }
