@@ -103,7 +103,7 @@ const app = express();
 // Middleware
 app.use(cors({
   origin: [
-    "https://disaster-management.netlify.app",
+    "https://disater-management.netlify.app",
     "http://localhost:5173"
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
