@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://disaster-management-ndtv.onrender.com/api", // Ensure port matches your backend
+  baseURL: "https://disaster-management-1-gt70.onrender.com", // Ensure port matches your backend
 });
 
 // 🔹 AUTOMATICALLY ATTACH TOKEN TO EVERY REQUEST
