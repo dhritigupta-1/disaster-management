@@ -21,7 +21,7 @@ export default function CitizenRegister() {
     if (!form.email) return setMsg("Please enter email address first.");
     setMsg("Sending Code...");
     try {
-      await api.post("/citizen/otp/send", { email: form.email });
+      await api.post("/api/citizen/otp/send", { email: form.email });
       setOtpSent(true);
       setMsg("✓ OTP Sent");
     } catch {
@@ -32,7 +32,7 @@ export default function CitizenRegister() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/citizen/auth/register", form);
+      await api.post("/api/citizen/auth/register", form);
       setMsg("✓ Success! Redirecting...");
       setTimeout(() => navigate("/citizen/login"), 1500);
     } catch (err) {
