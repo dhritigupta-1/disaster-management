@@ -133,20 +133,15 @@ const nodemailer = require("nodemailer");
 const sendEmail = async (options) => {
   // 1. Create transporter using SMTP env variables
   const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT),
-    secure: process.env.SMTP_PORT == 465, // true for 465, false for 587
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-    tls: {
-    rejectUnauthorized: false, // 🔥 IMPORTANT on Render
-    },
-    connectionTimeout: 20000,
-    greetingTimeout: 20000,
-    socketTimeout: 20000,
-  });
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT),
+  secure: false,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+  tls: { rejectUnauthorized: false },
+});
 
   // 2. Define email content
   const message = {
@@ -173,9 +168,13 @@ const sendEmail = async (options) => {
   };
 
   // 3. Send email
+  try {
   await transporter.verify();
-  console.log("SMTP ready");
-  await transporter.sendMail(message);
+  console.log("SMTP READY");
+} catch (err) {
+  console.error("SMTP ERROR:", err);
+  throw err;
+}
 };
 
 module.exports = sendEmail;
