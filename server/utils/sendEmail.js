@@ -173,6 +173,8 @@ const sendEmail = async (options) => {
   };
 
   // 3. Send email
+  await transporter.verify();
+  console.log("SMTP ready");
   await transporter.sendMail(message);
 };
 
