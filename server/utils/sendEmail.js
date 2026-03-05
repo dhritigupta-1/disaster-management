@@ -178,25 +178,25 @@
 // };
 
 // module.exports = sendEmail;
-const { Resend } = require("resend");
+// const { Resend } = require("resend");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// const resend = new Resend(process.env.RESEND_API_KEY);
 
-const sendEmail = async (options) => {
-  try {
-    const data = await resend.emails.send({
-      from: "Disaster Portal <dhritigupta200705@gmail.com>",
-      to: options.email,
-      subject: options.subject,
-      html: `<h2>Your OTP: ${options.otp}</h2>
-             <p>This code is valid for 5 minutes.</p>`,
-    });
+// const sendEmail = async (options) => {
+//   try {
+//     const data = await resend.emails.send({
+//       from: "Disaster Portal <dhritigupta200705@gmail.com>",
+//       to: options.email,
+//       subject: options.subject,
+//       html: `<h2>Your OTP: ${options.otp}</h2>
+//              <p>This code is valid for 5 minutes.</p>`,
+//     });
 
-    console.log("Email sent:", data);
+//     console.log("Email sent:", data);
 
-  } catch (error) {
-    console.error("Email error:", error);
-  }
-};
+//   } catch (error) {
+//     console.error("Email error:", error);
+//   }
+// };
 
-module.exports = sendEmail;
+// module.exports = sendEmail;
