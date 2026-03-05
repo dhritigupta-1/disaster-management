@@ -82,7 +82,7 @@ const {
 const citizenAuthRoutes = require("./routes/citizenAuthRoutes");
 const citizenIncidentRoutes = require("./routes/citizenIncidentRoutes");
 const citizenAlertRoutes = require("./routes/citizenAlertRoutes");
-const citizenOtpRoutes = require("./routes/citizenOtpRoutes");
+//const citizenOtpRoutes = require("./routes/citizenOtpRoutes");
 
 // Volunteer Routes
 const volunteerAuthRoutes = require("./routes/volunteerAuthRoutes"); // Auth (send-otp, register, login)
@@ -121,7 +121,7 @@ app.use(morgan("dev"));
 app.use("/api/citizen/auth", citizenAuthRoutes); // Public: register, login
 app.use("/api/citizen/incidents", protect, protectCitizen, citizenIncidentRoutes);
 app.use("/api/citizen/alerts", protect, citizenAlertRoutes);
-app.use("/api/citizen/otp", citizenOtpRoutes); // Public: send, verify
+//app.use("/api/citizen/otp", citizenOtpRoutes); // Public: send, verify
 
 // ---------------- VOLUNTEER ROUTES --------------
 app.use("/api/volunteer/auth", volunteerAuthRoutes); // Public: send-otp, register, login
