@@ -431,9 +431,9 @@ export default function CitizenRegister() {
 
       if (!recaptchaRef.current) {
         recaptchaRef.current = new RecaptchaVerifier(
-          auth,
           "recaptcha-container",
-          { size: "normal" }
+          { size: "normal" },
+          auth
         );
       }
 
@@ -490,7 +490,6 @@ export default function CitizenRegister() {
       <div className="w-full max-w-md p-10 bg-slate-900 border border-white/5 rounded-2xl shadow-xl shadow-black/30 mx-4 relative z-10">
 
         <div className="text-center mb-10">
-
           <div className="w-12 h-1 bg-red-600 mb-5 opacity-80 mx-auto"></div>
 
           <h1 className="text-3xl font-black text-white mb-1">
@@ -500,7 +499,6 @@ export default function CitizenRegister() {
           <p className="text-slate-400 text-sm">
             Citizen Registration
           </p>
-
         </div>
 
         {msg && (
@@ -587,7 +585,6 @@ export default function CitizenRegister() {
         </form>
 
         <div className="mt-6 text-center text-sm text-slate-500">
-
           Already registered?
 
           <Link
@@ -596,11 +593,9 @@ export default function CitizenRegister() {
           >
             Login
           </Link>
-
         </div>
 
       </div>
-
     </div>
   );
 }
