@@ -12,7 +12,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// Export auth for OTP login
 export const auth = getAuth(app);
 
 export default app;
