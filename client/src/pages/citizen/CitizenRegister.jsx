@@ -177,6 +177,213 @@
 //   );
 // }
 
+// correct for backend otp check
+// import { useState, useRef } from "react";
+// import { Link, useNavigate } from "react-router-dom";
+// import api from "../../api";
+// import { auth } from "../../firebase";
+// import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+
+// export default function CitizenRegister() {
+
+//   const navigate = useNavigate();
+//   const confirmationResultRef = useRef(null);
+
+//   const [msg, setMsg] = useState("");
+//   const [otpSent, setOtpSent] = useState(false);
+
+//   const [form, setForm] = useState({
+//     name: "",
+//     phone: "",
+//     email: "",
+//     password: "",
+//     otp: ""
+//   });
+
+//   const handleChange = (e) =>
+//     setForm({ ...form, [e.target.name]: e.target.value });
+
+//   // SEND OTP
+//   const handleSendOtp = async () => {
+
+//     if (!form.phone) return setMsg("Enter phone number with +91");
+
+//     try {
+
+//       const recaptcha = new RecaptchaVerifier(
+//         auth,
+//         "recaptcha-container",
+//         { size: "normal" }
+//       );
+
+//       const confirmationResult = await signInWithPhoneNumber(
+//         auth,
+//         form.phone,
+//         recaptcha
+//       );
+
+//       confirmationResultRef.current = confirmationResult;
+
+//       setOtpSent(true);
+//       setMsg("✓ OTP Sent");
+
+//     } catch (error) {
+
+//       console.error(error);
+//       setMsg("⚠ Failed to send OTP");
+
+//     }
+
+//   };
+
+//   // VERIFY OTP + REGISTER
+//   const handleSubmit = async (e) => {
+
+//     e.preventDefault();
+
+//     try {
+
+//       await confirmationResultRef.current.confirm(form.otp);
+
+//       await api.post("/api/citizen/auth/register", form);
+
+//       setMsg("✓ Success! Redirecting...");
+//       setTimeout(() => navigate("/citizen/login"), 1500);
+
+//     } catch (err) {
+
+//       console.error(err);
+//       setMsg("⚠ Invalid OTP");
+
+//     }
+
+//   };
+
+//   return (
+//     <div className="flex items-center justify-center min-h-screen bg-[#0a0a0a] relative overflow-hidden">
+
+//       <div className="absolute w-[500px] h-[500px] bg-red-700/15 rounded-full blur-[150px] -top-24 -left-24"></div>
+
+//       <div className="w-full max-w-md p-10 bg-slate-900 border border-white/5 rounded-2xl shadow-xl shadow-black/30 mx-4 relative z-10">
+
+//         <div className="text-center mb-10">
+
+//           <div className="w-12 h-1 bg-red-600 mb-5 opacity-80 mx-auto"></div>
+
+//           <h1 className="text-3xl font-black text-white mb-1">
+//             Join the Network
+//           </h1>
+
+//           <p className="text-slate-400 text-sm">
+//             Citizen Registration
+//           </p>
+
+//         </div>
+
+//         {msg && (
+//           <div className="p-3 mb-6 rounded text-center text-sm font-bold 
+//                           bg-red-500/10 text-red-400">
+//             {msg}
+//           </div>
+//         )}
+
+//         <form onSubmit={handleSubmit} className="space-y-5">
+
+//           <input
+//             name="name"
+//             onChange={handleChange}
+//             required
+//             placeholder="Full Name"
+//             className="w-full bg-slate-950 border border-white/10 rounded-lg px-4 py-3 text-white"
+//           />
+
+//           <input
+//             name="phone"
+//             onChange={handleChange}
+//             required
+//             placeholder="+91XXXXXXXXXX"
+//             className="w-full bg-slate-950 border border-white/10 rounded-lg px-4 py-3 text-white"
+//           />
+
+//           <div className="flex gap-2">
+
+//             <input
+//               name="email"
+//               type="email"
+//               onChange={handleChange}
+//               required
+//               placeholder="Email Address"
+//               className="w-full bg-slate-950 border border-white/10 rounded-lg px-4 py-3 text-white"
+//             />
+
+//             {!otpSent && (
+//               <button
+//                 type="button"
+//                 onClick={handleSendOtp}
+//                 className="px-4 bg-red-600 hover:bg-red-500 text-white rounded-lg text-sm font-bold"
+//               >
+//                 GET OTP
+//               </button>
+//             )}
+
+//           </div>
+
+//           {otpSent && (
+//             <input
+//               name="otp"
+//               onChange={handleChange}
+//               required
+//               placeholder="Enter OTP"
+//               className="w-full bg-slate-950 border border-red-500/40 rounded-lg px-4 py-3 text-white"
+//             />
+//           )}
+
+//           <input
+//             name="password"
+//             type="password"
+//             onChange={handleChange}
+//             required
+//             placeholder="Password"
+//             className="w-full bg-slate-950 border border-white/10 rounded-lg px-4 py-3 text-white"
+//           />
+
+//           <button
+//             type="submit"
+//             disabled={!otpSent}
+//             className={`w-full py-3.5 rounded-lg font-bold text-sm
+//               ${
+//                 otpSent
+//                   ? "bg-red-600 hover:bg-red-500 text-white"
+//                   : "bg-slate-800 text-slate-500 cursor-not-allowed"
+//               }`}
+//           >
+//             {otpSent ? "CREATE ACCOUNT" : "VERIFY PHONE FIRST"}
+//           </button>
+
+//           <div id="recaptcha-container"></div>
+
+//         </form>
+
+//         <div className="mt-6 text-center text-sm text-slate-500">
+
+//           Already registered?
+
+//           <Link
+//             to="/citizen/login"
+//             className="text-red-400 hover:text-white ml-1 font-bold"
+//           >
+//             Login
+//           </Link>
+
+//         </div>
+
+//       </div>
+
+//     </div>
+//   );
+// }
+
+
 import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../api";
@@ -186,6 +393,8 @@ import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 export default function CitizenRegister() {
 
   const navigate = useNavigate();
+
+  const recaptchaRef = useRef(null);
   const confirmationResultRef = useRef(null);
 
   const [msg, setMsg] = useState("");
@@ -202,29 +411,46 @@ export default function CitizenRegister() {
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  // SEND OTP
+  const validateEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   const handleSendOtp = async () => {
 
-    if (!form.phone) return setMsg("Enter phone number with +91");
+    if (!validateEmail(form.email)) {
+      setMsg("Enter valid email address");
+      return;
+    }
+
+    if (!form.phone) {
+      setMsg("Enter phone number");
+      return;
+    }
 
     try {
 
-      const recaptcha = new RecaptchaVerifier(
-        auth,
-        "recaptcha-container",
-        { size: "normal" }
-      );
+      if (!recaptchaRef.current) {
+        recaptchaRef.current = new RecaptchaVerifier(
+          auth,
+          "recaptcha-container",
+          { size: "normal" }
+        );
+      }
+
+      const phoneNumber = form.phone.startsWith("+")
+        ? form.phone
+        : `+91${form.phone}`;
 
       const confirmationResult = await signInWithPhoneNumber(
         auth,
-        form.phone,
-        recaptcha
+        phoneNumber,
+        recaptchaRef.current
       );
 
       confirmationResultRef.current = confirmationResult;
 
       setOtpSent(true);
-      setMsg("✓ OTP Sent");
+      setMsg("✓ OTP Sent Successfully");
 
     } catch (error) {
 
@@ -232,10 +458,8 @@ export default function CitizenRegister() {
       setMsg("⚠ Failed to send OTP");
 
     }
-
   };
 
-  // VERIFY OTP + REGISTER
   const handleSubmit = async (e) => {
 
     e.preventDefault();
@@ -246,16 +470,16 @@ export default function CitizenRegister() {
 
       await api.post("/api/citizen/auth/register", form);
 
-      setMsg("✓ Success! Redirecting...");
+      setMsg("✓ Registration Successful");
+
       setTimeout(() => navigate("/citizen/login"), 1500);
 
-    } catch (err) {
+    } catch (error) {
 
-      console.error(err);
+      console.error(error);
       setMsg("⚠ Invalid OTP");
 
     }
-
   };
 
   return (
@@ -280,8 +504,7 @@ export default function CitizenRegister() {
         </div>
 
         {msg && (
-          <div className="p-3 mb-6 rounded text-center text-sm font-bold 
-                          bg-red-500/10 text-red-400">
+          <div className="p-3 mb-6 rounded text-center text-sm font-bold bg-red-500/10 text-red-400">
             {msg}
           </div>
         )}
@@ -300,7 +523,7 @@ export default function CitizenRegister() {
             name="phone"
             onChange={handleChange}
             required
-            placeholder="+91XXXXXXXXXX"
+            placeholder="Phone Number"
             className="w-full bg-slate-950 border border-white/10 rounded-lg px-4 py-3 text-white"
           />
 
