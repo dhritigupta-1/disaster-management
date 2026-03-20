@@ -103,7 +103,7 @@ const app = express();
 // Middleware
 app.use(cors({
   origin: [
-    "https://disater-management.netlify.app",
+    "https://disaster-management-mu.vercel.app/",
     "http://localhost:5173"
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
